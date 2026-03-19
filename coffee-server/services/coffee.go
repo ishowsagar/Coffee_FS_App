@@ -296,3 +296,18 @@ if err!= nil {
 }
 return nil
 }
+
+// ! Delete coffee by Name
+func (c *Coffee) DeleteCoffeeByName(name string) error {
+	context,cancel := context.WithTimeout(context.Background(),dbTimeout)
+	defer cancel()
+
+	query := `delete from coffees where name=$1`
+
+	// ExecContext -> used when no need to return any data eg. deletion
+	_,err := db.ExecContext(context,query,name)
+	if err!= nil {
+	return err
+	}
+	return nil
+}

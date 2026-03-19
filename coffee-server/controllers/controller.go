@@ -17,6 +17,8 @@ func GetAllCoffees(w http.ResponseWriter,r *http.Request) {
 	all,err := models.Coffee.GetAllCoffees()
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to get coffee data, please check db connection first🫷😵‍💫"})
 		return
 	}
 	helpers.WriteJson(w,http.StatusOK,helpers.Envelop{"coffees":all})
@@ -31,6 +33,8 @@ func GetCoffeeByID(w http.ResponseWriter,r *http.Request) {
 	// if caught error getting coffee
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to get coffee,try again with correct ID🪧"})
 		return
 	}
 	// otherwise successfully got coffee by calling that func query --> send res back to client✅✅
@@ -43,6 +47,8 @@ func GetCoffeeByName(w http.ResponseWriter,r *http.Request) {
 	retrieved_coffee,err := models.Coffee.GetCoffeeByName(name_slug)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to get coffee,try again with correct name🪧"})
 		return
 	}
 	// sending response back to client
@@ -56,21 +62,27 @@ func GetCoffeeByPriceQP(w http.ResponseWriter, r *http.Request) {
 	// fetch client url params
 	price_param := r.URL.Query().Get("price")
 	if price_param == "" {
-		http.Error(w, "missing price query param", http.StatusBadRequest)
+		helpers.MessageLogs.ErrorLog.Println("no params detected, try again with correct params")
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to get coffee,try again with correct price🪧"})
 		return
 	}
 
 	// @ converts string query param into a decimal price value
 	priceValue, err := strconv.ParseFloat(price_param, 32)
 	if err != nil {
-		http.Error(w,"pass a valid numeric price only",http.StatusBadRequest)
+		helpers.MessageLogs.ErrorLog.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to get coffee,try again with correct *ID format*🪧"})
 		return
 	}
 
 	// successfully fetched numeric value of price q.p
 	retrieved_coffee,err := models.Coffee.GetCoffeeByqparamsPrice(float32(priceValue))
 	if err != nil {
-		http.Error(w,"failed to get coffee due to unknown price passed to it",http.StatusBadRequest)
+		helpers.MessageLogs.ErrorLog.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to get coffee due to unknown price passed to it💁‍♂️"})
 		return
 	}
 
@@ -87,7 +99,9 @@ func GetCoffeeByQueryParams(w http.ResponseWriter,r *http.Request) {
 		region_qparam = chi.URLParam(r,"region")
 	}
 	if region_qparam == "" {
-		http.Error(w,"missing region query param",http.StatusBadRequest)
+		helpers.MessageLogs.ErrorLog.Println("missing region query params")
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to get coffee due to missing region query params💁‍♂️"})
 		return
 	}
 	
@@ -108,7 +122,9 @@ func UpdateCoffeeByID(w http.ResponseWriter,r *http.Request) {
 	err:= json.NewDecoder(r.Body).Decode(&coffeeUpdateInputVar)
 	// if caught error decoding r.Body into coffeeupdateinputvar
 	if err != nil {
-		http.Error(w,err.Error(),http.StatusBadRequest)
+		helpers.MessageLogs.ErrorLog.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to update coffee due to unknown data or format💁‍♂️"})
 		return
 	}
 	// updatedCoffee,err:= coffee.UpdateCoffee(id,coffeeUpdateInputVar)
@@ -116,6 +132,8 @@ func UpdateCoffeeByID(w http.ResponseWriter,r *http.Request) {
 	// if caught error getting coffee
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to get coffee due to unknown ID passed to it💁‍♂️"})
 		return
 	}
 	// otherwise successfully got coffee by calling that func query --> send res back to client✅✅
@@ -143,14 +161,35 @@ func CreateCoffee(w http.ResponseWriter,r *http.Request) {
 	helpers.WriteJson(w,http.StatusOK,helpers.Envelop{"coffee":coffeeCreated})
 }
 
-func DeleteCoffee(w http.ResponseWriter,r *http.Request) {
+// delete coffee by {id}
+func DeleteCoffeeByID(w http.ResponseWriter,r *http.Request) {
 	id := chi.URLParam(r,"id")
 	err := models.Coffee.DeleteCoffeeByID(id)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to delete coffee due to unknown ID passed to it💁‍♂️"})
 		return
 	}
 	// sending response back to client
-	helpers.WriteJson(w,http.StatusOK,helpers.Envelop{"status":"succesfully deleted🛑🛑!"})
+	helpers.WriteJson(w,http.StatusNoContent,helpers.Envelop{"status":"Coffee successfully deleted🛑🛑!"})
+	
+}
+
+// delete coffee by {name} slug
+func DeleteCoffeeByNAME(w http.ResponseWriter,r *http.Request) {
+
+	// extracting name from url- path param
+	name_pathParam := chi.URLParam(r,"name") // returns value of this whatever slug has this "name" key
+	err := models.Coffee.DeleteCoffeeByName(name_pathParam)
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to delete coffee due to unknown name passed to it💁‍♂️"})
+		return
+	}
+
+	// sending response to client by deleting this coffee data from db
+	helpers.WriteJson(w,http.StatusNoContent,helpers.Envelop{"status":"Coffee successfully deleted🛑🛑"})
 
 }
