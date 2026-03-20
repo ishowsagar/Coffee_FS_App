@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function App() {
   const [health, setHealth] = useState("Checking backend...");
@@ -33,12 +34,58 @@ export default function App() {
     loadData();
   }, []);
 
+  // delete coffee by id (preferred) or by name fallback
+  async function handleDelete(coffee) {
+    setError("");
+
+    const hasID = Boolean(coffee?.id);
+    const encodedId = hasID ? encodeURIComponent(coffee.id) : "";
+    const encodedName = !hasID ? encodeURIComponent(coffee?.name ?? "") : "";
+    const endPoint = encodedId
+      ? `/api/coffees/del/id/${encodedId}`
+      : `/api/coffees/del/name/${encodedName}`;
+
+    try {
+      const res = await fetch(endPoint, { method: "DELETE" });
+      if (!res.ok) {
+        throw new Error("failed to delete coffee ");
+      }
+      // removing that coffee from existence
+      setCoffees((prevArr) => {
+        return prevArr.filter((item) => {
+          if (hasID) {
+            return item.id !== coffee.id;
+          }
+          return item.name !== coffee.name;
+        });
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Delete failed");
+    }
+  }
+
   return (
     <div className="page">
       <header className="hero">
         <h1>Coffee Hub</h1>
+        <nav className="hero-navbar">
+          <ul className="hero-navbar-ul">
+            <li className="hero-navbar-ul-li">
+              <Link to="/home">Home</Link>
+            </li>
+            <li className="hero-navbar-ul-li">
+              <Link to="/collections">Collections</Link>
+            </li>
+            <li className="hero-navbar-ul-li">
+              <Link to="/home">Shop</Link>
+            </li>
+            <li className="hero-navbar-ul-li">
+              <Link to="/home">Help</Link>
+            </li>
+          </ul>
+        </nav>
         {/* <p>{health}l</p> */}
-      </header>
+      </header> 
 
       <main className="content">
         <h2>Available Coffees</h2>
@@ -60,6 +107,7 @@ export default function App() {
                 <p>
                   Price: <strong>${coffee.price ?? "-"}</strong>
                 </p>
+                <button onClick={() => handleDelete(coffee)}>del🗑️</button>
               </li>
             ))}
           </ul>

@@ -164,6 +164,14 @@ func CreateCoffee(w http.ResponseWriter,r *http.Request) {
 // delete coffee by {id}
 func DeleteCoffeeByID(w http.ResponseWriter,r *http.Request) {
 	id := chi.URLParam(r,"id")
+	
+	// ID validation
+	if id == "" {
+		helpers.MessageLogs.ErrorLog.Println("no id detected,try again.")
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to delete coffee due to no ID passed to it💁‍♂️"})
+		return
+	}
+
 	err := models.Coffee.DeleteCoffeeByID(id)
 	if err != nil {
 		helpers.MessageLogs.ErrorLog.Println(err)

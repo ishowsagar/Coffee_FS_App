@@ -66,3 +66,22 @@ body {
   color: #b00020;
   font-weight: 600;
 }
+
+
+/** basic styling **/
+.hero-navbar-ul {
+  border: yellowgreen;
+  display: flex;
+  list-style: none;
+  align-items: flex-start;
+  justify-content: space-around;
+}
+.hero-navbar-ul-li {
+  border-left: burlywood 5px solid ;
+  width: auto;
+  padding-left: 10px;
+  height: auto;
+  font-size: medium;
+  font-weight: bold;
+}
+

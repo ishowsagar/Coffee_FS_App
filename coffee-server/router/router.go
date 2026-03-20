@@ -39,8 +39,8 @@ func Routes() http.Handler {
 	router.Get("/api/coffees/query/{region}",controllers.GetCoffeeByQueryParams) //@ backward-compatible path param form
 	router.Get("/api/coffees/price",controllers.GetCoffeeByPriceQP) //@ get coffee by Price query e.g ?price=90
 	router.Put("/api/coffees/{id:[0-9a-fA-F-]+}",controllers.UpdateCoffeeByID)
-	router.Delete("/api/coffees/{id:[0-9a-fA-F-]+}",controllers.DeleteCoffeeByID)
-	router.Delete("/api/coffees/{name}",controllers.DeleteCoffeeByNAME)
+	router.Delete("/api/coffees/del/id/{id:[0-9a-fA-F-]+}",controllers.DeleteCoffeeByID)
+	router.Delete("/api/coffees/del/name/{name}",controllers.DeleteCoffeeByNAME)
 
 	// $ returning router which would be used by the handler by main server
 	return router
