@@ -311,3 +311,16 @@ func (c *Coffee) DeleteCoffeeByName(name string) error {
 	}
 	return nil
 }
+
+// ! delete all coffees data at once
+func(c *Coffee) DeleteCoffeeAll() error {
+	context,cancel := context.WithTimeout(context.Background(),dbTimeout)
+	defer cancel()
+
+	query := `delete from coffees`
+	_,err := db.ExecContext(context,query)
+	if err!= nil {
+	return err
+	}
+	return nil
+}

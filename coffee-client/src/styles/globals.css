@@ -67,7 +67,6 @@ body {
   font-weight: 600;
 }
 
-
 /** basic styling **/
 .hero-navbar-ul {
   border: yellowgreen;
@@ -77,7 +76,7 @@ body {
   justify-content: space-around;
 }
 .hero-navbar-ul-li {
-  border-left: burlywood 5px solid ;
+  border-left: burlywood 5px solid;
   width: auto;
   padding-left: 10px;
   height: auto;
@@ -85,3 +84,10 @@ body {
   font-weight: bold;
 }
 
+.danger-btn:hover {
+  background-color: #b00020;
+  color: white;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  transform: translateX(50px);
+  transition: transform 5s ease-out;
+}

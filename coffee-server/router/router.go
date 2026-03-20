@@ -41,6 +41,7 @@ func Routes() http.Handler {
 	router.Put("/api/coffees/{id:[0-9a-fA-F-]+}",controllers.UpdateCoffeeByID)
 	router.Delete("/api/coffees/del/id/{id:[0-9a-fA-F-]+}",controllers.DeleteCoffeeByID)
 	router.Delete("/api/coffees/del/name/{name}",controllers.DeleteCoffeeByNAME)
+	router.Delete("/api/coffees/del/all",controllers.DeleteCoffeeAll)
 
 	// $ returning router which would be used by the handler by main server
 	return router

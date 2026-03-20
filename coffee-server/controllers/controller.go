@@ -201,3 +201,20 @@ func DeleteCoffeeByNAME(w http.ResponseWriter,r *http.Request) {
 	helpers.WriteJson(w,http.StatusNoContent,helpers.Envelop{"status":"Coffee successfully deleted🛑🛑"})
 
 }
+
+// delete coffee by {name} slug
+func DeleteCoffeeAll(w http.ResponseWriter,r *http.Request) {
+
+	// extracting name from url- path param
+	err := models.Coffee.DeleteCoffeeAll()
+	if err != nil {
+		helpers.MessageLogs.ErrorLog.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		helpers.WriteJson(w,http.StatusBadRequest,helpers.Envelop{"status":"failed to delete all coffees data."})
+		return
+	}
+
+	// sending response to client by deleting this coffee data from db
+	helpers.WriteJson(w,http.StatusNoContent,helpers.Envelop{"status":"All Coffee data successfully deleted🛑🛑"})
+
+}

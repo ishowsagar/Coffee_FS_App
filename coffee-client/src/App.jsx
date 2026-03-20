@@ -127,6 +127,29 @@ export default function App() {
     }
   }
 
+  async function handleDeleteAll() {
+    const endPoint = `/api/coffees/del/all`;
+    try {
+      const res = await fetch(endPoint, {
+        method: "DELETE",
+        headers: { "Content-type": "no/content" },
+      });
+
+      // error handeling
+      if (!res.ok) {
+        return;
+      }
+
+      // if query db successful
+      setCoffees([]);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "failed to delete all coffees data",
+      );
+    }
+  }
   return (
     <div className="page">
       <header className="hero">
@@ -225,6 +248,19 @@ export default function App() {
         </form>
 
         <h2>Available Coffees</h2>
+        <button
+          onClick={handleDeleteAll}
+          className="danger-btn"
+          style={{
+            padding: "10px,15px",
+            fontSize: "15px",
+            fontWeight: "bolder",
+            cursor: "pointer",
+            borderRadius: "4px",
+          }}
+        >
+          Don't Click This ❌❌
+        </button>
         {loading && <p>Loading coffees...</p>}
         {error && <p className="error">{error}</p>}
 
